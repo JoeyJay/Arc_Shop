@@ -6,10 +6,12 @@ import pymssql
 import pyodbc
 from cryptography.fernet import Fernet
 import re
+import uuid
 
 key = Fernet.generate_key()
 cipher_suite = Fernet(key)
 
+# use online db?
 params = urllib.parse.quote_plus(
     r'DRIVER={SQL Server};SERVER=JOSEPHKABAU\SQLEXPRESS;DATABASE=Shop')
 conn_str = 'mssql+pyodbc:///?odbc_connect={}'.format(params)
@@ -22,7 +24,6 @@ def check_is_none(*objs):  # function to check if an argument is of type None
         if val is None:
             fact = False
     return fact
-
 
 def encrypt_pass(password):
     encoded_text = cipher_suite.encrypt(b'%password%')
@@ -79,6 +80,40 @@ def list_all_items():
     df_products = pd.read_sql(query, engine)
     df_product = df_products['product_name'][0]
     print(df_product)
+
+
+def add_to_cart(product_id, account_id):
+    query = "SELECT * FROM Shop.dbo.Products WHERE PRODUCT_ID = {}".format(product_id)
+    df_products = pd.read_sql(query, engine)
+    df_product = df_products['product_name'][0]
+    to_checkout = pd.DataFrame({
+        'product_id': df_product
+    }, index=[1])
+    to_checkout.to_sql('Checkout', engine, if_exists='append', index=False)
+
+
+def purchase(product_id, account_id):
+    diff = 0
+    a_query = "SELECT * FROM Shop.dbo.Account WHERE ACCOUNT_ID = {}".format(account_id)
+    df_account = pd.read_sql(a_query, engine)
+    df_balance = df_account['balance'][0]
+    p_query = "SELECT * FROM Shop.dbo.Checkout WHERE PRODUCT_ID = {}".format(product_id)
+    df_products = pd.read_sql(p_query, engine)
+    df_product_price = df_products['product_price'][1]
+    if df_balance < df_product_price:
+        print("Not enough in the bank")
+    else:
+        diff = df_balance - df_product_price
+        # update on account_id only
+        to_deduct = pd.DataFrame({
+            'balance': diff
+        }, index=[1])
+        to_deduct.to_sql('Account', engine, if_exists='append', index=False)
+        print("successfully purchased")
+        #  deduct function
+        #  update (delete) value in checkout
+        #  send email
+        return diff
 # Start program
 # Use argparse for login or signup?
 '''
@@ -87,7 +122,8 @@ parser.add_argument("login", help="Enter 'login' or 'signup'")
 parser.parse_args()
 '''
 #  if args.login == 'signup':
-create_item(1, 12, 'taiyes', 2)
+_id = uuid.uuid4()
+print(_id)
 '''
 print("Do you want to Login or Sign Up?")
 log_answer = input("Y or N: ")
