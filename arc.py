@@ -16,6 +16,14 @@ conn_str = 'mssql+pyodbc:///?odbc_connect={}'.format(params)
 engine = create_engine(conn_str)
 
 
+def check_is_none(*objs):  # function to check if an argument is of type None
+    fact = True
+    for val in objs:
+        if val is None:
+            fact = False
+    return fact
+
+
 def encrypt_pass(password):
     encoded_text = cipher_suite.encrypt(b'%password%')
     #  str_enc = encoded_text.decode("utf-8")
@@ -53,20 +61,24 @@ def create_user(user_name, password):
         new_user.to_sql('User_Au', engine, if_exists='append', index=False)
 
 
-def check_is_none(*objs):
-    fact = True
-    for val in objs:
-        if val is None:
-            fact = False
-    return fact
-
-
 def create_item(item_name, item_price, manufacturer, in_stock):
     if check_is_none(item_name, item_price, manufacturer, in_stock):
-        print("items in stock")
+        new_item = pd.DataFrame({
+            'product_name': item_name,
+            'product_price': item_name,
+            'manufacturer': manufacturer,
+            'in_stock': in_stock
+        }, index=[1])
+        new_item.to_sql('Products', engine, if_exists='append', index=False)
     else:
         print("Cannot process null values")
 
+
+def list_all_items():
+    query = "SELECT * FROM Shop.dbo.Products"  # refactor to use stored procs for security
+    df_products = pd.read_sql(query, engine)
+    df_product = df_products['product_name'][0]
+    print(df_product)
 # Start program
 # Use argparse for login or signup?
 '''
