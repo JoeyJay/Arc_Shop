@@ -7,6 +7,7 @@ import pyodbc
 from cryptography.fernet import Fernet
 import re
 import uuid
+from datetime import date
 
 key = Fernet.generate_key()
 cipher_suite = Fernet(key)
@@ -45,8 +46,8 @@ def validate_password(passwd):
     return valid
 
 
-def create_user(user_name, password):
-    query = "SELECT * FROM Shop.dbo.User_Au"  # refactor to use stored procs for security
+def create_user(user_name, password, email):
+    query = "SELECT * FROM Shop.dbo.User_table"  # refactor to use stored procs for security
     df_user = pd.read_sql(query, engine)
     df_user_name = df_user['Name'][0]
     #print(df_user_name)
@@ -56,10 +57,12 @@ def create_user(user_name, password):
         # ...
     else:
         new_user = pd.DataFrame({
-            'Name': user_name,
-            'Pass': encrypt_pass(password)
+            'user_id': uuid.uuid4()
+            'email': email,
+            'pass': encrypt_pass(password),
+            'date_created': date.today()
         }, index=[1])
-        new_user.to_sql('User_Au', engine, if_exists='append', index=False)
+        new_user.to_sql('User_table', engine, if_exists='append', index=False)
 
 
 def create_item(item_name, item_price, manufacturer, in_stock):
