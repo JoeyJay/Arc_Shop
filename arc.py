@@ -53,7 +53,30 @@ def create_user(user_name, password):
         new_user.to_sql('User_Au', engine, if_exists='append', index=False)
 
 
+def check_is_none(*objs):
+    fact = True
+    for val in objs:
+        if val is None:
+            fact = False
+    return fact
+
+
+def create_item(item_name, item_price, manufacturer, in_stock):
+    if check_is_none(item_name, item_price, manufacturer, in_stock):
+        print("items in stock")
+    else:
+        print("Cannot process null values")
+
 # Start program
+# Use argparse for login or signup?
+'''
+parser = argparse.ArgumentParser(description='Login or Sign Up')
+parser.add_argument("login", help="Enter 'login' or 'signup'")
+parser.parse_args()
+'''
+#  if args.login == 'signup':
+create_item(1, 12, 'taiyes', 2)
+'''
 print("Do you want to Login or Sign Up?")
 log_answer = input("Y or N: ")
 if log_answer == 'Y' or log_answer == 'y':
@@ -62,6 +85,7 @@ if log_answer == 'Y' or log_answer == 'y':
     validate_password(password)
     if validate_password(password):
         create_user(user_name, password)
+'''
 '''
 #   welcome()
 print("Do you want to sell an item?")
