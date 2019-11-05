@@ -57,7 +57,7 @@ def create_user(user_name, password, email):
         # ...
     else:
         new_user = pd.DataFrame({
-            'user_id': uuid.uuid4()
+            'user_id': uuid.uuid4(),
             'email': email,
             'pass': encrypt_pass(password),
             'date_created': date.today()
