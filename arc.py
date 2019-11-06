@@ -1,4 +1,3 @@
-import argparse
 import pandas as pd
 from sqlalchemy import create_engine
 import urllib
@@ -7,7 +6,9 @@ import pyodbc
 from cryptography.fernet import Fernet
 import re
 import uuid
+import random
 from datetime import date
+# remove redundant libraries
 
 key = Fernet.generate_key()
 cipher_suite = Fernet(key)
@@ -28,7 +29,7 @@ def check_is_none(*objs):  # function to check if an argument is of type None
 
 def encrypt_pass(password):
     encoded_text = cipher_suite.encrypt(b'%password%')
-    #  str_enc = encoded_text.decode("utf-8")
+    str_enc = encoded_text.decode("utf-8")
     return encoded_text
 
 
@@ -46,23 +47,44 @@ def validate_password(passwd):
     return valid
 
 
-def create_user(user_name, password, email):
+def create_account(user_id):
+    balance = random.randint(500, 1000)
+    new_account = pd.DataFrame({
+        'account_id': uuid.uuid4(),
+        'user_id': user_id,
+        'balance': balance
+    }, index=[1])
+    new_account.to_sql('Account', engine, if_exists='append', index=False)
+
+def create_user(email, password):
+    user_id = uuid.uuid4()
     query = "SELECT * FROM Shop.dbo.User_table"  # refactor to use stored procs for security
     df_user = pd.read_sql(query, engine)
-    df_user_name = df_user['Name'][0]
-    #print(df_user_name)
-
-    if user_name == df_user_name[0]:
-        print('User already exists')
-        # ...
+    ''''''
+    if 1 > 2:
+        pass
+        '''
+        df_email = df_user['email'][0]
+        if email == df_email[0]:
+            print('User already exists')
+            # ...
+        '''
     else:
         new_user = pd.DataFrame({
-            'user_id': uuid.uuid4(),
+            'user_id': user_id,
             'email': email,
             'pass': encrypt_pass(password),
             'date_created': date.today()
         }, index=[1])
         new_user.to_sql('User_table', engine, if_exists='append', index=False)
+        create_account(user_id)
+
+
+def login(email, password):
+    query = "SELECT * FROM Shop.dbo.User_table"  # refactor to use stored procs for security
+    df_user = pd.read_sql(query, engine)
+    for index, em in enumerate(df_user):
+        print(df_user['email'][index])
 
 
 def create_item(item_name, item_price, manufacturer, in_stock):
@@ -125,18 +147,21 @@ parser.add_argument("login", help="Enter 'login' or 'signup'")
 parser.parse_args()
 '''
 #  if args.login == 'signup':
-_id = uuid.uuid4()
-print(_id)
-'''
-print("Do you want to Login or Sign Up?")
-log_answer = input("Y or N: ")
+
+
+log_answer = input("Create a new account? Y/N")
 if log_answer == 'Y' or log_answer == 'y':
-    user_name = input("Enter your username: ")
+    email = input("Enter your email address: ")
     password = input("Enter your password: ")
     validate_password(password)
     if validate_password(password):
-        create_user(user_name, password)
-'''
+        create_user(email, password)
+else:
+    sign_answer = input("Do you want to sign in? Y/N")
+    if sign_answer == 'Y' or sign_answer == 'y':
+        email = input("Enter email")
+        password = input("Enter password")
+        login(email, password)
 '''
 #   welcome()
 print("Do you want to sell an item?")
