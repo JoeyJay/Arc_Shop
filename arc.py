@@ -113,9 +113,17 @@ def create_dummmy_item():
     dummy_list = {'FIFA 20': 800, 'Borderlands 3': 850,
                   'Bass guitar': 1000, 'Iron Man Movie': 350,
                   '2003 Manga Collection': 750, 'Arsenal T': 600,
-                  'Some other cool product': 100, 'Yello mug': 50}
-    x = random.choice(list(dummy_list.keys()))
-    print(x)
+                  'Some other cool product': 100, 'Yellow mug': 50}
+    random_item = random.choice(list(dummy_list.keys()))
+    item_price = dummy_list.get(random_item, "")
+    new_random_product = pd.DataFrame({
+        'product_id': uuid.uuid4(),
+        'product_name': random_item,
+        'product_price': item_price,
+        'manufacturer': 'Evil Corp'
+    })
+    new_random_product.to_sql('Checkout', engine, if_exists='append', index=False)
+
 
 def list_all_items():
     query = "SELECT * FROM Shop.dbo.Products"  # refactor to use stored procs for security
