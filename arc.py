@@ -121,7 +121,7 @@ def create_dummmy_item():
         'product_name': random_item,
         'product_price': item_price,
         'manufacturer': 'Evil Corp'
-    })
+    }, index=[1])
     new_random_product.to_sql('Checkout', engine, if_exists='append', index=False)
 
 
