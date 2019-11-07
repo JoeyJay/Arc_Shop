@@ -173,7 +173,7 @@ parser.parse_args()
 '''
 #  if args.login == 'signup':
 
-
+create_dummmy_item()  # add a random item to the products table in case it's empty
 log_answer = input("Create a new account? Y/N")
 if log_answer == 'Y' or log_answer == 'y':
     email = input("Enter your email address: ")
