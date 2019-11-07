@@ -83,8 +83,11 @@ def create_user(email, password):
 def login(email, password):
     query = "SELECT * FROM Shop.dbo.User_table"  # refactor to use stored procs for security
     df_user = pd.read_sql(query, engine)
-    for index, em in enumerate(df_user):
-        print(df_user['email'][index])
+    i = 0
+    for ind in range(len(df_user)):
+        print(df_user['email'][ind])
+        if email == df_user['email'][ind] and password == decrypt_pass(df_user['pass'][ind]):
+            print('login successful')
 
 
 def create_item(item_name, item_price, manufacturer, in_stock):
@@ -161,7 +164,7 @@ else:
     if sign_answer == 'Y' or sign_answer == 'y':
         email = input("Enter email")
         password = input("Enter password")
-        #login(email, password)
+        login(email, password)
 '''
 #   welcome()
 print("Do you want to sell an item?")
