@@ -61,7 +61,7 @@ def create_user(email, password):
     query = "SELECT * FROM Shop.dbo.User_table"  # refactor to use stored procs for security
     df_user = pd.read_sql(query, engine)
     ''''''
-    if 1 > 2:
+    if email == str(df_user['email']):
         pass
         '''
         df_email = df_user['email'][0]
@@ -161,7 +161,7 @@ else:
     if sign_answer == 'Y' or sign_answer == 'y':
         email = input("Enter email")
         password = input("Enter password")
-        login(email, password)
+        #login(email, password)
 '''
 #   welcome()
 print("Do you want to sell an item?")
