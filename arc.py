@@ -89,6 +89,7 @@ def login(email, password):
         print(df_user['email'][ind])
         if email == df_user['email'][ind] and password == decrypt_pass(df_user['pass'][ind]):
             print('login successful')
+            list_all_items()
         else:
             try_again = input('Return to home screen Y/N')
             if try_again == 'Y' or try_again == 'y':
