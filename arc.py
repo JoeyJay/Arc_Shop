@@ -8,6 +8,7 @@ import re
 import uuid
 import random
 from datetime import date
+import os
 # remove redundant libraries
 
 key = Fernet.generate_key()
@@ -88,7 +89,10 @@ def login(email, password):
         print(df_user['email'][ind])
         if email == df_user['email'][ind] and password == decrypt_pass(df_user['pass'][ind]):
             print('login successful')
-
+        else:
+            try_again = input('Return to home screen Y/N')
+            if try_again == 'Y' or try_again == 'y':
+                os.system('python "arc.py"')
 
 def create_item(item_name, item_price, manufacturer, in_stock):
     if check_is_none(item_name, item_price, manufacturer, in_stock):
