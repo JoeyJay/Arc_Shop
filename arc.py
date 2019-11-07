@@ -95,18 +95,27 @@ def login(email, password):
             if try_again == 'Y' or try_again == 'y':
                 os.system('python "arc.py"')
 
-def create_item(item_name, item_price, manufacturer, in_stock):
-    if check_is_none(item_name, item_price, manufacturer, in_stock):
+
+def create_item(item_name, item_price, manufacturer):
+    if check_is_none(item_name, item_price, manufacturer):
         new_item = pd.DataFrame({
+            'product_id': uuid.uuid4(),
             'product_name': item_name,
             'product_price': item_name,
-            'manufacturer': manufacturer,
-            'in_stock': in_stock
+            'manufacturer': manufacturer
         }, index=[1])
         new_item.to_sql('Products', engine, if_exists='append', index=False)
     else:
         print("Cannot process null values")
 
+
+def create_dummmy_item():
+    dummy_list = {'FIFA 20': 800, 'Borderlands 3': 850,
+                  'Bass guitar': 1000, 'Iron Man Movie': 350,
+                  '2003 Manga Collection': 750, 'Arsenal T': 600,
+                  'Some other cool product': 100, 'Yello mug': 50}
+    x = random.choice(list(dummy_list.keys()))
+    print(x)
 
 def list_all_items():
     query = "SELECT * FROM Shop.dbo.Products"  # refactor to use stored procs for security
@@ -169,7 +178,8 @@ else:
     if sign_answer == 'Y' or sign_answer == 'y':
         email = input("Enter email")
         password = input("Enter password")
-        login(email, password)
+        #login(email, password)
+        create_dummmy_item()
 '''
 #   welcome()
 print("Do you want to sell an item?")
